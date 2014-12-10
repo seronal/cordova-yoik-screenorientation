@@ -14,10 +14,15 @@ var exec = require('cordova/exec'),
 screenOrientation.setOrientation = function(orientation) {
     iosOrientation = orientation;
 
+    if (screenOrientation.timeoutID) {
+        clearTimeout(screenOrientation.timeoutID);
+        screenOrientation.timeoutID = undefined;
+    }
+
     var success = function(res) {
         if (orientation === 'unlocked' && res.device) {
             iosOrientation = res.device;
-            setTimeout(function() {
+            screenOrientation.timeoutID = setTimeout(function() {
                 iosOrientation = 'unlocked';
             },300);
         }
