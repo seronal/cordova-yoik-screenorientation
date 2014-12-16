@@ -14,17 +14,22 @@ var exec = require('cordova/exec'),
 screenOrientation.setOrientation = function(orientation) {
     iosOrientation = orientation;
 
-    if (screenOrientation.timeoutID) {
-        clearTimeout(screenOrientation.timeoutID);
-        screenOrientation.timeoutID = undefined;
-    }
-
     var success = function(res) {
+
+        if (screenOrientation.timeoutID) {
+            clearTimeout(screenOrientation.timeoutID);
+            screenOrientation.timeoutID = undefined;
+        }
         if (orientation === 'unlocked' && res.device) {
             iosOrientation = res.device;
             screenOrientation.timeoutID = setTimeout(function() {
                 iosOrientation = 'unlocked';
             },300);
+        } else {
+            //re-assign variable as it might have been overwritten by the 'unlock'
+            // timeout above. This prevents wrong behavior when calling this
+            // function in times shorter than 300ms.
+            iosOrientation = orientation;
         }
     };
 
